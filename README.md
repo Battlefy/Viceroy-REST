@@ -1,5 +1,5 @@
 
-# Viceroy
+# Viceroy SuperAgent Driver
 
 ## Control your empire
 
@@ -16,8 +16,8 @@ See the [Viceroy Repo](https://github.com/Battlefy/Viceroy) for more info.
 # Viceroy SuperAgent
 
 ## Getting started
-
-please stand by...
+This is a driver for making http requests to a rest server, preferably
+one powered by viceroy.
 
 ## Docs
 
@@ -30,10 +30,9 @@ please stand by...
 var viceroy = require('viceroy');
 var viceroySuperAgent = require('viceroy-superagent');
 
-viceroy.use(viceroySuperAgent({
+viceroy.driver(viceroySuperAgent({
   host: 'localhost',
-  port: 0000,
-  database: 'test'
+  port: 8000,
 }));
 
 function Person(data) {
@@ -64,11 +63,8 @@ viceroy.connect(function() {
     tags: ['software engineer', 'male']
   });
 
-  person.get(query, function(err) {});
   person.save(function(err) {});
   person.remove(function(err) {});
-  person.data(data);
-  person.data();
 
   person.friends(function(err, friends) {});
 });
