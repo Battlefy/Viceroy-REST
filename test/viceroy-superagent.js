@@ -1,10 +1,13 @@
 var viceroySuperAgent = require('../');
-var Fixture = require('arboria');
+var nock = require('nock');
 
 var sinon = require('sinon');
 
 var invalidConfig = { bad: 'data' };
-var validConfig = {};
+var validConfig = {
+  host: 'localhost',
+  port: '8000'
+};
 
 describe('middleware', function() {
 
@@ -12,12 +15,12 @@ describe('middleware', function() {
     var middleware = viceroySuperAgent(invalidConfig);
     middleware.connect(function(err) {
       (!!err).should.be.OK;
-      // err.should.be.an.instanceOf(Error);
+      err.should.be.an.instanceOf(Error);
       done()
     });
   });
 
-  it('can connect to mongodb', function(done) {
+  it('can connect', function(done) {
     var middleware = viceroySuperAgent(validConfig);
     middleware.connect(done);
   });
@@ -31,72 +34,69 @@ describe('middleware', function() {
     })
 
     it('has a find method that calls into superagent', function(done) {
-      var modelName = 'People'
+      var findServer = nock('http://localhost:8000')
+        .get('/people')
+        .reply(200, [{name: 'Shane', age: 25}], {'Content-Type': 'application/json'});
+
+      var collection = 'people'
       var query = { name: 'Shane'};
       var callback = sinon.spy();
       this.middleware.find.should.be.a('function');
-      this.middleware.find(modelName, query, function (err, results) {
+      this.middleware.find(query, {collection: collection}, function (err, results) {
         if (err) { throw err };
         results.length.should.equal(1);
-        results[0].should.include({ name: 'Shane', age: 25 });
+        results[0].should.eql({ name: 'Shane', age: 25 });
         done();
       })
     });
 
     it('implements a findOne method that calls out to superagent', function(done) {
+      var findServer = nock('http://localhost:8000')
+        .get('/people/1')
+        .reply(200, {name: 'Shane', age: 25}, {'Content-Type': 'application/json'});
+
       var _this = this;
-      var modelName = 'People'
-      var query = { name: 'Shane'};
+      var collection = 'people';
+      var query = { _id: 1 };
       this.middleware.findOne.should.be.a('function');
-      this.middleware.findOne(modelName, query, function(err, result){
+      this.middleware.findOne(query, {collection: collection}, function(err, result){
         if (err) { throw err };
-        result.should.include({ name: 'Shane', age: 25 });
+        result.should.eql({ name: 'Shane', age: 25 });
         done();
       });
     });
 
-    it('implements a save method that calls out to superagent', function(done) {
+    it('implements an insert method that calls out to superagent', function(done) {
+      var findServer = nock('http://localhost:8000')
+        .post('/people')
+        .reply(200, {name: 'Shane', age: 26}, {'Content-Type': 'application/json'});
+
       var _this = this;
-      var modelName = 'People'
+      var collection = 'people'
       var data = { name: 'Shane', age: 26 };
-      this.middleware.save.should.be.a('function');
-      this.middleware.save(modelName, data, function(err){
+      this.middleware.insert.should.be.a('function');
+      this.middleware.insert(data, {collection: collection}, function(err, result){
         if (err) { throw err };
+        result.should.eql(data);
         done();
       });
     });
 
     it('implements a remove method that calls out to superagent', function(done) {
+      var findServer = nock('http://localhost:8000')
+        .delete('/people/1')
+        .reply(200, {}, {'Content-Type': 'application/json'});
       var _this = this;
-      var modelName = 'People'
-      var query = { name: 'Shane', age: 26 };
-
-      this.middleware.findOne(modelName, query, function (err, result) {
-        _this.middleware.remove.should.be.a('function');
-        _this.middleware.remove(modelName, result, function(err){
-          if (err) { throw err };
-          done();
-        });
-      })
+      var collection = 'people';
+      var query = { _id: 1, name: 'Shane', age: 26 };
+      _this.middleware.removeOne.should.be.a('function');
+      _this.middleware.removeOne(query, {collection: collection}, function(err){
+        if (err) { throw err };
+        done();
+      });
 
     });
 
-    it('implements a count method that calls out to mongodb', function(done) {
-      var _this = this;
-      var modelName = 'People'
-      var query = { name: 'Shane', age: 25 };
-
-      this.middleware.findOne(modelName, query, function (err, result) {
-        _this.middleware.count.should.be.a('function');
-        _this.middleware.count(modelName, result, function(err, tokens){
-          if (err) { throw err };
-          tokens.length.should.equal(1);
-          done();
-        });
-      })
-
-    });
-
-  })
+  });
 
 });
