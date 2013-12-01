@@ -20,10 +20,10 @@
     "url": "https://github.com/Battlefy/Viceroy-Rest/issues"
   },
   "dependencies": {
-    "superagent": "~0.15.7",
-    "viceroy": "~1.2.3"
+    "superagent": "~0.15.7"
   },
   "devDependencies": {
+    "viceroy": "~1.2.3",
     "mocha": "~1.13.0",
     "should": "~1.3.0",
     "viceroy": "1.1.3",
