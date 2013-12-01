@@ -1,4 +1,4 @@
-var viceroySuperAgent = require('../');
+var viceroyRest = require('../');
 var nock = require('nock');
 
 var sinon = require('sinon');
@@ -12,7 +12,7 @@ var validConfig = {
 describe('middleware', function() {
 
   it('passes the callback an error if it failed to initialize', function(done) {
-    var middleware = viceroySuperAgent(invalidConfig);
+    var middleware = viceroyRest(invalidConfig);
     middleware.connect(function(err) {
       (!!err).should.be.OK;
       err.should.be.an.instanceOf(Error);
@@ -21,7 +21,7 @@ describe('middleware', function() {
   });
 
   it('can connect', function(done) {
-    var middleware = viceroySuperAgent(validConfig);
+    var middleware = viceroyRest(validConfig);
     middleware.connect(done);
   });
 
@@ -29,11 +29,11 @@ describe('middleware', function() {
 
     before(function(done){
       var _this = this;
-      this.middleware = viceroySuperAgent(validConfig);
+      this.middleware = viceroyRest(validConfig);
       this.middleware.connect(done);
     })
 
-    it('has a find method that calls into superagent', function(done) {
+    it('has a find method that calls into http', function(done) {
       nock('http://localhost:8000')
         .get('/people')
         .reply(200, [{name: 'Shane', age: 25}], {'Content-Type': 'application/json'});
@@ -50,7 +50,7 @@ describe('middleware', function() {
       })
     });
 
-    it('implements a findOne method that calls out to superagent', function(done) {
+    it('implements a findOne method that calls out to http', function(done) {
       nock('http://localhost:8000')
         .get('/people/1')
         .reply(200, {name: 'Shane', age: 25}, {'Content-Type': 'application/json'});
@@ -66,7 +66,7 @@ describe('middleware', function() {
       });
     });
 
-    it('implements an insert method that calls out to superagent', function(done) {
+    it('implements an insert method that calls out to http', function(done) {
       nock('http://localhost:8000')
         .post('/people')
         .reply(200, {name: 'Shane', age: 26}, {'Content-Type': 'application/json'});
@@ -82,7 +82,7 @@ describe('middleware', function() {
       });
     });
 
-    it('implements a remove method that calls out to superagent', function(done) {
+    it('implements a remove method that calls out to http', function(done) {
       nock('http://localhost:8000')
         .delete('/people/1')
         .reply(200, {}, {'Content-Type': 'application/json'});

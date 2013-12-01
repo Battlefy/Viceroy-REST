@@ -1,5 +1,4 @@
-
-# Viceroy SuperAgent Driver
+# Viceroy Rest Driver
 
 ## Control your empire
 
@@ -13,7 +12,7 @@ Viceroy.
 
 See the [Viceroy Repo](https://github.com/Battlefy/Viceroy) for more info.
 
-# Viceroy SuperAgent
+# Viceroy Rest
 
 ## Getting started
 This is a driver for making http requests to a rest server, preferably
@@ -28,11 +27,11 @@ please stand by...
 
 ```javascript
 
-var viceroySuperAgent = require('viceroy-superagent');
+var viceroyRest = require('viceroy-superagent');
 var viceroy = require('viceroy');
 var util = require('util');
 
-viceroy.driver(viceroySuperAgent({
+viceroy.driver(viceroyRest({
   host: 'localhost',
   port: 8000,
 }));

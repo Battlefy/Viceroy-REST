@@ -1,4 +1,4 @@
-var viceroySuperAgent = require('../');
+var viceroyRest = require('../');
 var Viceroy = require('viceroy').Viceroy;
 var Model = require('viceroy').Model;
 var nock = require('nock');
@@ -14,7 +14,7 @@ describe('Viceroy Integration', function() {
 
   it('can load as middlware in viceroy', function(done) {
     var viceroy = new Viceroy;
-    viceroy.driver(viceroySuperAgent(validConfig));
+    viceroy.driver(viceroyRest(validConfig));
     viceroy.connect(done);
   });
 
@@ -22,7 +22,7 @@ describe('Viceroy Integration', function() {
 
     before(function(done) {
       this.viceroy = new Viceroy;
-      this.viceroy.driver(viceroySuperAgent(validConfig));
+      this.viceroy.driver(viceroyRest(validConfig));
       this.viceroy.connect(done)
     })
 
