@@ -17,7 +17,8 @@ See the [Viceroy Repo](https://github.com/Battlefy/Viceroy) for more info.
 
 ## Getting started
 This is a driver for making http requests to a rest server, preferably
-one powered by viceroy.
+one powered by viceroy. This works in both node and in the browser.
+Check out the package.json for browserify build examples.
 
 ## Docs
 
@@ -27,46 +28,41 @@ please stand by...
 
 ```javascript
 
+var viceroySuperAgent = require('../');
 var viceroy = require('viceroy');
-var viceroySuperAgent = require('viceroy-superagent');
+var util = require('util');
 
 viceroy.driver(viceroySuperAgent({
   host: 'localhost',
   port: 8000,
 }));
 
-function Person(data) {
-  Model.call(this, data);
+function Team(data) {
+  viceroy.Model.call(this, data);
 
-  this.addSchema({
+  this.schema({
     name: String,
     age: Number,
     tags: Array
   });
-
-  this.hasMany('friends', Person);
 }
 
-
-viceroy.model('person', Person);
+util.inherits(Team, viceroy.Model);
+viceroy.model('team', Team);
 
 viceroy.connect(function() {
+  var query = {_id: 1};
 
-  Person.find(query, function(err, people) {});
-  Person.findOne(query, function(err, person) {});
-  Person.count(query, function(err, count) {});
+  Team.find(query, function(err, people) {});
+  Team.findOne(query, function(err, team) {});
+  Team.count(query, function(err, count) {});
 
-
-  var person = new Person({
-    name: 'Robert',
-    age: 23,
-    tags: ['software engineer', 'male']
+  var team = new Team({
+    name: 'THETEAM',
   });
 
-  person.save(function(err) {});
-  person.remove(function(err) {});
-
-  person.friends(function(err, friends) {});
+  team.save(function(err) {});
+  team.remove(function(err) {});
 });
 
 ```
