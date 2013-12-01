@@ -7,7 +7,8 @@
     "test": "./node_modules/.bin/mocha",
     "serve": "./node_modules/.bin/static public",
     "build-js": "./node_modules/.bin/browserify demo/app.js > public/bundle.js",
-    "build-serve": "npm run build-js && npm run serve"
+    "build-serve": "npm run build-js && npm run serve",
+    "watch-js": "./node_modules/.bin/watchify demo/app.js -o public/bundle.js"
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,7 @@
     "viceroy": "1.1.3",
     "nock": "~0.23.0",
     "browserify": "~2.36.0",
-    "node-static": "~0.7.2"
+    "node-static": "~0.7.2",
+    "watchify": "~0.4.1"
   }
 }

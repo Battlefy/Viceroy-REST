@@ -21,6 +21,6 @@ viceroy.model('tournament', Tournament);
 viceroy.connect(function() {
   var query = {_id: "52998de7effdc000000557a5"};
   Tournament.findOne(query, function(err, tournament) {
-    console.log('tournament=', err, tournament);
+    console.log('tournament===', err, tournament);
   });
 });
