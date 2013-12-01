@@ -7,30 +7,20 @@ viceroy.driver(viceroySuperAgent({
   port: 8000,
 }));
 
-function Team(data) {
+function Tournament(data) {
   viceroy.Model.call(this, data);
 
   this.schema({
     name: String,
-    age: Number,
-    tags: Array
   });
 }
 
-util.inherits(Team, viceroy.Model);
-viceroy.model('team', Team);
+util.inherits(Tournament, viceroy.Model);
+viceroy.model('tournament', Tournament);
 
 viceroy.connect(function() {
-  var query = {_id: 1};
-
-  Team.find(query, function(err, team) {});
-  Team.findOne(query, function(err, team) {});
-  Team.count(query, function(err, count) {});
-
-  var team = new Team({
-    name: 'THETEAM',
+  var query = {_id: "52998de7effdc000000557a5"};
+  Tournament.findOne(query, function(err, tournament) {
+    console.log('tournament=', tournament);
   });
-
-  team.save(function(err) {});
-  team.remove(function(err) {});
 });

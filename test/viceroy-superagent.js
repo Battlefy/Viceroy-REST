@@ -77,7 +77,7 @@ describe('middleware', function() {
       this.middleware.insert.should.be.a('function');
       this.middleware.insert(data, {collection: collection}, function(err, result){
         if (err) { throw err };
-        result.should.eql(data);
+        result.should.eql([data]);
         done();
       });
     });

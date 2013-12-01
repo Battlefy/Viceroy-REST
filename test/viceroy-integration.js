@@ -39,8 +39,6 @@ describe('Viceroy Integration', function() {
           age: Number,
           tags: Array
         });
-
-        this.hasMany(Person, 'friends');
       }
       util.inherits(Person, Model);
       this.viceroy.model('People', Person);
@@ -48,7 +46,7 @@ describe('Viceroy Integration', function() {
         name: 'Shane',
         age: 25,
       });
-      person.save(function() {
+      person.save(function(err) {
         person._id.should.exist;
         done();
       });
@@ -57,7 +55,7 @@ describe('Viceroy Integration', function() {
     it('can remove a model', function(done) {
       var findServer = nock('http://localhost:8000')
         .post('/peoples')
-        .reply(200, {_id: 1, name: 'Shane', age: 25, friendIDs: []}, {'Content-Type': 'application/json'});
+        .reply(200, {_id: 1, name: 'Shane', age: 25}, {'Content-Type': 'application/json'});
       var findServer = nock('http://localhost:8000')
         .delete('/peoples/1')
         .reply(200, {}, {'Content-Type': 'application/json'});
@@ -78,6 +76,7 @@ describe('Viceroy Integration', function() {
       var person = new Person({
         name: 'Shane',
         age: 25,
+        _id: 1
       });
       person.save(function(err, person) {
         if(err) { throw err; }
