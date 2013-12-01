@@ -27,7 +27,7 @@ describe('Viceroy Integration', function() {
     })
 
     it('can create a model', function(done) {
-      var findServer = nock('http://localhost:8000')
+      nock('http://localhost:8000')
         .post('/peoples')
         .reply(200, {_id: 1, name: 'Shane', age: 25}, {'Content-Type': 'application/json'});
 
@@ -53,13 +53,13 @@ describe('Viceroy Integration', function() {
     })
 
     it('can remove a model', function(done) {
-      var findServer = nock('http://localhost:8000')
+      nock('http://localhost:8000')
         .post('/peoples')
         .reply(200, {_id: 1, name: 'Shane', age: 25}, {'Content-Type': 'application/json'});
-      var findServer = nock('http://localhost:8000')
+      nock('http://localhost:8000')
         .delete('/peoples/1')
         .reply(200, {}, {'Content-Type': 'application/json'});
-      var findServer = nock('http://localhost:8000')
+      nock('http://localhost:8000')
         .get('/peoples/1')
         .reply(404);
       function Person(data) {
@@ -93,10 +93,10 @@ describe('Viceroy Integration', function() {
     })
 
     it('can update a model', function(done) {
-      var findServer = nock('http://localhost:8000')
+      nock('http://localhost:8000')
         .post('/peoples')
         .reply(200, {_id: 1, name: 'Shane', age: 25}, {'Content-Type': 'application/json'});
-      var findServer = nock('http://localhost:8000')
+      nock('http://localhost:8000')
         .put('/peoples/1')
         .reply(200, {name: 'Herp'}, {'Content-Type': 'application/json'});
 

@@ -34,7 +34,7 @@ describe('middleware', function() {
     })
 
     it('has a find method that calls into superagent', function(done) {
-      var findServer = nock('http://localhost:8000')
+      nock('http://localhost:8000')
         .get('/people')
         .reply(200, [{name: 'Shane', age: 25}], {'Content-Type': 'application/json'});
 
@@ -51,7 +51,7 @@ describe('middleware', function() {
     });
 
     it('implements a findOne method that calls out to superagent', function(done) {
-      var findServer = nock('http://localhost:8000')
+      nock('http://localhost:8000')
         .get('/people/1')
         .reply(200, {name: 'Shane', age: 25}, {'Content-Type': 'application/json'});
 
@@ -67,7 +67,7 @@ describe('middleware', function() {
     });
 
     it('implements an insert method that calls out to superagent', function(done) {
-      var findServer = nock('http://localhost:8000')
+      nock('http://localhost:8000')
         .post('/people')
         .reply(200, {name: 'Shane', age: 26}, {'Content-Type': 'application/json'});
 
@@ -83,7 +83,7 @@ describe('middleware', function() {
     });
 
     it('implements a remove method that calls out to superagent', function(done) {
-      var findServer = nock('http://localhost:8000')
+      nock('http://localhost:8000')
         .delete('/people/1')
         .reply(200, {}, {'Content-Type': 'application/json'});
       var _this = this;
