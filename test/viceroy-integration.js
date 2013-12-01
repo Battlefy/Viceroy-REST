@@ -98,8 +98,9 @@ describe('Viceroy Integration', function() {
         .post('/peoples')
         .reply(200, {_id: 1, name: 'Shane', age: 25}, {'Content-Type': 'application/json'});
       var findServer = nock('http://localhost:8000')
-        .put('/peoples')
+        .put('/peoples/1')
         .reply(200, {name: 'Herp'}, {'Content-Type': 'application/json'});
+
       function Person(data) {
         Model.call(this, data);
 
@@ -114,7 +115,8 @@ describe('Viceroy Integration', function() {
       this.viceroy.model('People', Person);
       var person = new Person({
         name: 'Shane',
-        age: 25
+        age: 25,
+        _id: 1
       });
       person.save(function() {
         person.name = 'Herp';
