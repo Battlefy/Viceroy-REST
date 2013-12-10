@@ -25,6 +25,16 @@ describe('middleware', function() {
     middleware.connect(done);
   });
 
+  it('can take option withCredentials', function(done) {
+    var config = {
+      host: 'localhost',
+      port: '8000',
+      withCredentials: true
+    }
+    var middleware = viceroyRest(config);
+    middleware.connect(done);
+  });
+
   describe('methods', function(){
 
     before(function(done){
@@ -77,7 +87,7 @@ describe('middleware', function() {
       this.middleware.insert.should.be.a('function');
       this.middleware.insert(data, {collection: collection}, function(err, result){
         if (err) { throw err };
-        result.should.eql([data]);
+        result.should.eql(data);
         done();
       });
     });
