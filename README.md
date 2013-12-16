@@ -26,12 +26,11 @@ please stand by...
 ## Example
 
 ```javascript
-
-var viceroySuperAgent = require('../');
+var viceroyRest = require('viceroy-rest');
 var viceroy = require('viceroy');
 var util = require('util');
 
-viceroy.driver(viceroySuperAgent({
+viceroy.driver(viceroyRest({
   host: 'localhost',
   port: 8000,
 }));
@@ -55,7 +54,7 @@ viceroy.connect(function() {
   // GET http://localhost:8000/tournaments/123
   Tournament.findOne({_id: "123"}, function(err, tournament) {
     tournament.name = 'herp';
-    // PUT http://localhost:8000/tournaments/123 => {"$set":{"name":"herp"}}
+    // PUT http://localhost:8000/tournaments/123
     tournament.save(function(err, tournament){ })
   });
 

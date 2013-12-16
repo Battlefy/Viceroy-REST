@@ -1,8 +1,8 @@
-var viceroySuperAgent = require('../');
+var viceroyRest = require('../');
 var viceroy = require('viceroy');
 var util = require('util');
 
-viceroy.driver(viceroySuperAgent({
+viceroy.driver(viceroyRest({
   host: 'localhost',
   port: 8000,
 }));
