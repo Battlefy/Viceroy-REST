@@ -28,7 +28,7 @@ describe('Viceroy Integration', function() {
 
     it('can create a model', function(done) {
       nock('http://localhost:8000')
-        .post('/peoples')
+        .post('/people')
         .reply(200, [{_id: 1, name: 'Shane', age: 25}], {'Content-Type': 'application/json'});
 
       function Person(data) {
@@ -41,7 +41,7 @@ describe('Viceroy Integration', function() {
         });
       }
       util.inherits(Person, Model);
-      this.viceroy.model('People', Person);
+      this.viceroy.model(Person);
       var person = new Person({
         name: 'Shane',
         age: 25,
@@ -54,13 +54,13 @@ describe('Viceroy Integration', function() {
 
     it('can remove a model', function(done) {
       nock('http://localhost:8000')
-        .post('/peoples')
+        .post('/people')
         .reply(200, {_id: 1, name: 'Shane', age: 25}, {'Content-Type': 'application/json'});
       nock('http://localhost:8000')
-        .delete('/peoples/1')
+        .delete('/people/1')
         .reply(200, {}, {'Content-Type': 'application/json'});
       nock('http://localhost:8000')
-        .get('/peoples/1')
+        .get('/people/1')
         .reply(404);
       function Person(data) {
         Model.call(this, data);
@@ -72,7 +72,7 @@ describe('Viceroy Integration', function() {
         });
       }
       util.inherits(Person, Model);
-      this.viceroy.model('People', Person);
+      this.viceroy.model(Person);
       var person = new Person({
         name: 'Shane',
         age: 25,
@@ -94,10 +94,10 @@ describe('Viceroy Integration', function() {
 
     it('can update a model', function(done) {
       nock('http://localhost:8000')
-        .post('/peoples')
+        .post('/people')
         .reply(200, {_id: 1, name: 'Shane', age: 25}, {'Content-Type': 'application/json'});
       nock('http://localhost:8000')
-        .put('/peoples/1')
+        .put('/people/1')
         .reply(200, {name: 'Herp'}, {'Content-Type': 'application/json'});
 
       function Person(data) {
@@ -111,7 +111,7 @@ describe('Viceroy Integration', function() {
 
       }
       util.inherits(Person, Model);
-      this.viceroy.model('People', Person);
+      this.viceroy.model(Person);
       var person = new Person({
         name: 'Shane',
         age: 25,
@@ -123,6 +123,37 @@ describe('Viceroy Integration', function() {
           person.name.should.equal('Herp');
           done();
         })
+      });
+    })
+
+    it('can find a model with $populate', function(done) {
+
+      nock('http://localhost:8000')
+        .get('/people/123')
+        .reply(200, {name: 'Herp', friendIDs: ['124']}, {'Content-Type': 'application/json'});
+
+      nock('http://localhost:8000')
+        .get('/people')
+        .reply(200, [{name: 'Derp'}], {'Content-Type': 'application/json'});
+
+      function Person(data) {
+        Model.call(this, data);
+
+        this.schema({
+          name: String,
+          age: Number,
+          tags: Array
+        });
+
+        this.hasMany(Person, 'friends');
+      }
+      util.inherits(Person, Model);
+
+      this.viceroy.model(Person);
+
+      Person.findOne({_id: 123, $populate: ['friends']}, function(err, result){
+        result.friends.length.should.equal(1);
+        done()
       });
     })
 
