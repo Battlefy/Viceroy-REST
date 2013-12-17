@@ -1,8 +1,6 @@
 var viceroyRest = require('../');
 var nock = require('nock');
 
-var sinon = require('sinon');
-
 var invalidConfig = { bad: 'data' };
 var validConfig = {
   host: 'localhost',
@@ -50,7 +48,6 @@ describe('middleware', function() {
 
       var collection = 'people'
       var query = { name: 'Shane'};
-      var callback = sinon.spy();
       this.middleware.find.should.be.a('function');
       this.middleware.find(query, {collection: collection}, function (err, results) {
         if (err) { throw err };
