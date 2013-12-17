@@ -1,6 +1,6 @@
 {
   "name": "viceroy-rest",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "./lib/viceroy-rest.js",
   "scripts": {
