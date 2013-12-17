@@ -29,7 +29,7 @@ describe('Viceroy Integration', function() {
     it('can create a model', function(done) {
       nock('http://localhost:8000')
         .post('/people')
-        .reply(200, [{_id: 1, name: 'Shane', age: 25}], {'Content-Type': 'application/json'});
+        .reply(200, {_id: 1, name: 'Shane', age: 25}, {'Content-Type': 'application/json'});
 
       function Person(data) {
         Model.call(this, data);
