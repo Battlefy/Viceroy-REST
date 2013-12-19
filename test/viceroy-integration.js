@@ -130,11 +130,11 @@ describe('Viceroy Integration', function() {
 
       nock('http://localhost:8000')
         .get('/people/123')
-        .reply(200, {name: 'Herp', friendIDs: ['124']}, {'Content-Type': 'application/json'});
+        .reply(200, {_id: 123, name: 'Herp', friendIDs: ['124']}, {'Content-Type': 'application/json'});
 
       nock('http://localhost:8000')
         .get('/people')
-        .reply(200, [{name: 'Derp'}], {'Content-Type': 'application/json'});
+        .reply(200, [{_id: 124, name: 'Derp'}], {'Content-Type': 'application/json'});
 
       function Person(data) {
         Model.call(this, data);
@@ -153,6 +153,70 @@ describe('Viceroy Integration', function() {
 
       Person.findOne({_id: 123, $populate: ['friends']}, function(err, result){
         result.friends.length.should.equal(1);
+        done()
+      });
+    })
+
+    it('can $populate a nested model with a hasMany resource route', function(done) {
+
+      nock('http://localhost:8000')
+        .get('/people/123')
+        .reply(200, {_id: 123, name: 'Herp', friendIDs: ['124']}, {'Content-Type': 'application/json'});
+
+      nock('http://localhost:8000')
+        .get('/people/123/friends')
+        .reply(200, [{_id: 124, name: 'Derp'}], {'Content-Type': 'application/json'});
+
+      function Person(data) {
+        Model.call(this, data);
+
+        this.schema({
+          name: String,
+          age: Number,
+          tags: Array
+        });
+
+        this.hasMany(Person, {getterPath: 'friends', nested: true});
+      }
+
+      util.inherits(Person, Model);
+
+      this.viceroy.model(Person);
+
+      Person.findOne({_id: 123, $populate: ['friends']}, function(err, result){
+        result.friends[0].name.should.equal('Derp');
+        result.friends.length.should.equal(1);
+        done()
+      });
+    })
+
+    it('can $populate a nested model with a resource route', function(done) {
+
+      nock('http://localhost:8000')
+        .get('/people/123')
+        .reply(200, {_id: 123, name: 'Herp', friendID: 124}, {'Content-Type': 'application/json'});
+
+      nock('http://localhost:8000')
+        .get('/people/123/friends/124')
+        .reply(200, {_id: 124, name: 'Derp'}, {'Content-Type': 'application/json'});
+
+      function Person(data) {
+        Model.call(this, data);
+
+        this.schema({
+          name: String,
+          age: Number,
+          tags: Array
+        });
+
+        this.hasOne(Person, {getterPath: 'friend', nested: 'friends'});
+      }
+      util.inherits(Person, Model);
+
+      this.viceroy.model(Person);
+
+      Person.findOne({_id: 123, $populate: ['friend']}, function(err, result){
+        result.friend.name.should.equal('Derp');
         done()
       });
     })
