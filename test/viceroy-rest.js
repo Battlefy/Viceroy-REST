@@ -23,6 +23,29 @@ describe('middleware', function() {
     middleware.connect(done);
   });
 
+  it('can take option beforeSend', function(done) {
+    var config = {
+      host: 'localhost',
+      port: '8000',
+      beforeSend: function(){ }
+    };
+    var middleware = viceroyRest(config);
+    middleware.connect(done);
+  });
+
+  it('can error with option beforeSend as not an object', function(done) {
+    var config = {
+      host: 'localhost',
+      port: '8000',
+      beforeSend: {}
+    }
+    var middleware = viceroyRest(config);
+    middleware.connect(function(err){
+      err.message.should.include('beforeSend');
+      done()
+    });
+  });
+
   it('can take option withCredentials', function(done) {
     var config = {
       host: 'localhost',
@@ -86,6 +109,25 @@ describe('middleware', function() {
         if (err) { throw err };
         result.should.eql(data);
         done();
+      });
+    });
+
+    it('implements an insert method that calls out to beforeSend before http', function(done) {
+      nock('http://localhost:8000')
+        .post('/people')
+        .reply(200, {name: 'Shane', age: 26}, {'Content-Type': 'application/json'});
+
+      var _this = this;
+      var collection = 'people'
+      var data = { name: 'Shane', age: 26 };
+      var called = false;
+      this.middleware.opts.beforeSend = function(){
+        called = true;
+      }
+      this.middleware.insert.should.be.a('function');
+      this.middleware.insert(data, {collection: collection}, function(){
+        called.should.equal(true);
+        done()
       });
     });
 

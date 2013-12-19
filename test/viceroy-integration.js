@@ -32,7 +32,7 @@ describe('Viceroy Integration', function() {
         .reply(200, {_id: 1, name: 'Shane', age: 25}, {'Content-Type': 'application/json'});
 
       function Person(data) {
-        Model.call(this, data);
+        Model.call(this, arguments);
 
         this.schema({
           name: String,
@@ -63,7 +63,7 @@ describe('Viceroy Integration', function() {
         .get('/people/1')
         .reply(404);
       function Person(data) {
-        Model.call(this, data);
+        Model.apply(this, arguments);
 
         this.schema({
           name: String,
@@ -101,7 +101,7 @@ describe('Viceroy Integration', function() {
         .reply(200, {name: 'Herp'}, {'Content-Type': 'application/json'});
 
       function Person(data) {
-        Model.call(this, data);
+        Model.apply(this, arguments);
 
         this.schema({
           name: String,
@@ -168,7 +168,7 @@ describe('Viceroy Integration', function() {
         .reply(200, [{_id: 124, name: 'Derp'}], {'Content-Type': 'application/json'});
 
       function Person(data) {
-        Model.call(this, data);
+        Model.apply(this, arguments);
 
         this.schema({
           name: String,
@@ -190,7 +190,7 @@ describe('Viceroy Integration', function() {
       });
     })
 
-    it('can $populate a nested model with a resource route', function(done) {
+    it('can $populate a nested model with a hasOne resource route', function(done) {
 
       nock('http://localhost:8000')
         .get('/people/123')
@@ -201,7 +201,7 @@ describe('Viceroy Integration', function() {
         .reply(200, {_id: 124, name: 'Derp'}, {'Content-Type': 'application/json'});
 
       function Person(data) {
-        Model.call(this, data);
+        Model.apply(this, arguments);
 
         this.schema({
           name: String,
@@ -218,6 +218,40 @@ describe('Viceroy Integration', function() {
       Person.findOne({_id: 123, $populate: ['friend']}, function(err, result){
         result.friend.name.should.equal('Derp');
         done()
+      });
+    })
+
+    it('can insert a nested model with a hasOne resource route', function(done) {
+
+      nock('http://localhost:8000')
+        .get('/people/123')
+        .reply(200, {_id: 123, name: 'Herp'}, {'Content-Type': 'application/json'});
+
+      nock('http://localhost:8000')
+        .post('/people/123/friends')
+        .reply(200, {_id: 124, name: 'Derp'}, {'Content-Type': 'application/json'});
+
+      function Person(data) {
+        Model.apply(this, arguments);
+
+        this.schema({
+          name: String,
+          age: Number,
+          tags: Array
+        });
+
+        this.hasOne(Person, {getterPath: 'friend', nested: 'friends'});
+      }
+      util.inherits(Person, Model);
+
+      this.viceroy.model(Person);
+
+      Person.findOne({_id: 123}, function(err, person){
+        person.friend.create({name: 'Derp'}, function(err, friend){
+          if (err) { throw err }
+          friend.name.should.equal('Derp');
+          done()
+        })
       });
     })
 
