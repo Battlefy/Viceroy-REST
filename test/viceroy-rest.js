@@ -143,9 +143,6 @@ describe('middleware', function() {
         if (err) { throw err };
         done();
       });
-
     });
-
   });
-
 });
