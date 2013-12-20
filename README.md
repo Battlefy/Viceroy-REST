@@ -19,9 +19,19 @@ This is a driver for making http requests to a rest server, preferably
 one powered by viceroy. This works in both node and in the browser.
 Check out the package.json for browserify build examples.
 
-## Docs
+## Config
 
-please stand by...
+Config to Viceroy-Rest should include the following configs:
+
+```javascript
+viceroy.driver(viceroyRest({
+  host: 'localhost', //required
+  port: 8000, // optional
+  beforeSend: function(data) { // optional
+    return data;
+  }
+}));
+```
 
 ## Example
 
