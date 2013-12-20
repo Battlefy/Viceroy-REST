@@ -24,7 +24,7 @@
     "qs": "~0.6.6"
   },
   "devDependencies": {
-    "viceroy": "1.7.0",
+    "viceroy": "1.7.2",
     "mocha": "~1.13.0",
     "should": "~1.3.0",
     "nock": "~0.23.0",

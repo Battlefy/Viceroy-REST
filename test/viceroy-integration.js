@@ -255,6 +255,50 @@ describe('Viceroy Integration', function() {
       });
     })
 
+    it('can insert a nested model with a hasMany resource route', function(done) {
+
+      nock('http://localhost:8000')
+        .get('/people/123')
+        .reply(200, {_id: 123, name: 'Herp'}, {'Content-Type': 'application/json'});
+
+      nock('http://localhost:8000')
+        .post('/people/123/dogs')
+        .reply(200, {_id: 124, name: 'Derp'}, {'Content-Type': 'application/json'});
+
+      function Dog(data) {
+        Model.apply(this, arguments);
+
+        this.schema({
+          name: String
+        });
+      }
+      util.inherits(Dog, Model);
+      this.viceroy.model(Dog);
+
+      function Person(data) {
+        Model.apply(this, arguments);
+
+        this.schema({
+          name: String,
+          age: Number,
+          tags: Array
+        });
+
+        this.hasMany('Dog', {nested: true});
+      }
+      util.inherits(Person, Model);
+
+      this.viceroy.model(Person);
+
+      Person.findOne({_id: 123, $populate: ['dogs']}, function(err, person){
+        person.dogs.create({name: 'Derp'}, function(err, friend){
+          if (err) { throw err }
+          friend.name.should.equal('Derp');
+          done()
+        })
+      });
+    })
+
   })
 
 })
