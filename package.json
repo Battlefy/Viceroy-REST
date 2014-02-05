@@ -1,6 +1,6 @@
 {
   "name": "viceroy-rest",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "",
   "main": "./lib/viceroy-rest.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "url": "https://github.com/Battlefy/Viceroy-Rest/issues"
   },
   "dependencies": {
-    "superagent": "~0.15.7",
+    "superagent": "0.16.0",
     "qs": "~0.6.6"
   },
   "devDependencies": {
