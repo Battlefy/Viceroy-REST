@@ -21,7 +21,8 @@
   },
   "dependencies": {
     "superagent": "0.16.0",
-    "qs": "~0.6.6"
+    "qs": "~0.6.6",
+    "primitive": "~0.4.2"
   },
   "devDependencies": {
     "viceroy": "1.7.2",

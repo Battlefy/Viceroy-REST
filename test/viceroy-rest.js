@@ -80,22 +80,6 @@ describe('middleware', function() {
       })
     });
 
-    it('implements a findOne method that calls out to http', function(done) {
-      nock('http://localhost:8000')
-        .get('/people/1')
-        .reply(200, {name: 'Shane', age: 25}, {'Content-Type': 'application/json'});
-
-      var _this = this;
-      var collection = 'people';
-      var query = { _id: 1 };
-      this.middleware.findOne.should.be.a('function');
-      this.middleware.findOne(query, {collection: collection}, function(err, result){
-        if (err) { throw err };
-        result.should.eql({ name: 'Shane', age: 25 });
-        done();
-      });
-    });
-
     it('implements an insert method that calls out to http', function(done) {
       nock('http://localhost:8000')
         .post('/people')
