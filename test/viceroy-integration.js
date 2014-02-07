@@ -60,7 +60,7 @@ describe('Viceroy Integration', function() {
         .delete('/people/1')
         .reply(200, {}, {'Content-Type': 'application/json'});
       nock('http://localhost:8000')
-        .get('/people/1')
+        .get('/people')
         .reply(404);
       function Person(data) {
         Model.apply(this, arguments);
@@ -85,7 +85,7 @@ describe('Viceroy Integration', function() {
           if(err) { throw err; }
           Person.findOne({ _id: id }, function(err, person) {
             if(err) { throw err; }
-            (!person._id).should.be.true;
+            (!person).should.be.true;
             done();
           });
         });
@@ -129,12 +129,17 @@ describe('Viceroy Integration', function() {
     it('can find a model with $populate', function(done) {
 
       nock('http://localhost:8000')
-        .get('/people/123')
-        .reply(200, {_id: 123, name: 'Herp', friendIDs: ['124']}, {'Content-Type': 'application/json'});
+        .get('/people')
+        .reply(200, [
+          {_id: 123, name: 'Herp', friendIDs: ['124', '125']}
+        ], {'Content-Type': 'application/json'});
 
       nock('http://localhost:8000')
         .get('/people')
-        .reply(200, [{_id: 124, name: 'Derp'}], {'Content-Type': 'application/json'});
+        .reply(200, [
+          {_id: 124, name: 'Derp'},
+          {_id: 125, name: 'Billy'}
+        ], {'Content-Type': 'application/json'});
 
       function Person(data) {
         Model.call(this, data);
@@ -152,7 +157,8 @@ describe('Viceroy Integration', function() {
       this.viceroy.model(Person);
 
       Person.findOne({_id: 123, $populate: ['friends']}, function(err, result){
-        result.friends.length.should.equal(1);
+        if(err) { return done(err); }
+        result.friends.length.should.equal(2);
         done()
       });
     })
@@ -160,8 +166,8 @@ describe('Viceroy Integration', function() {
     it('can $populate a nested model with a hasMany resource route', function(done) {
 
       nock('http://localhost:8000')
-        .get('/people/123')
-        .reply(200, {_id: 123, name: 'Herp', friendIDs: ['124']}, {'Content-Type': 'application/json'});
+        .get('/people')
+        .reply(200, [{_id: 123, name: 'Herp', friendIDs: ['124']}], {'Content-Type': 'application/json'});
 
       nock('http://localhost:8000')
         .get('/people/123/friends')
@@ -193,12 +199,12 @@ describe('Viceroy Integration', function() {
     it('can $populate a nested model with a hasOne resource route', function(done) {
 
       nock('http://localhost:8000')
-        .get('/people/123')
-        .reply(200, {_id: 123, name: 'Herp', friendID: 124}, {'Content-Type': 'application/json'});
+        .get('/people')
+        .reply(200, [{_id: 123, name: 'Herp', friendID: 124}], {'Content-Type': 'application/json'});
 
       nock('http://localhost:8000')
-        .get('/people/123/friends/124')
-        .reply(200, {_id: 124, name: 'Derp'}, {'Content-Type': 'application/json'});
+        .get('/people/123/friends')
+        .reply(200, [{_id: 124, name: 'Derp'}], {'Content-Type': 'application/json'});
 
       function Person(data) {
         Model.apply(this, arguments);
@@ -224,8 +230,8 @@ describe('Viceroy Integration', function() {
     it('can insert a nested model with a hasOne resource route', function(done) {
 
       nock('http://localhost:8000')
-        .get('/people/123')
-        .reply(200, {_id: 123, name: 'Herp'}, {'Content-Type': 'application/json'});
+        .get('/people')
+        .reply(200, [{_id: 123, name: 'Herp'}], {'Content-Type': 'application/json'});
 
       nock('http://localhost:8000')
         .post('/people/123/friends')
@@ -258,8 +264,8 @@ describe('Viceroy Integration', function() {
     it('can insert a nested model with a hasMany resource route', function(done) {
 
       nock('http://localhost:8000')
-        .get('/people/123')
-        .reply(200, {_id: 123, name: 'Herp'}, {'Content-Type': 'application/json'});
+        .get('/people')
+        .reply(200, [{_id: 123, name: 'Herp'}], {'Content-Type': 'application/json'});
 
       nock('http://localhost:8000')
         .post('/people/123/dogs')
@@ -297,8 +303,8 @@ describe('Viceroy Integration', function() {
           done()
         })
       });
-    })
+    });
 
-  })
+  });
 
-})
+});
