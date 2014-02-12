@@ -84,8 +84,7 @@ describe('Viceroy Integration', function() {
         person.remove(function(err) {
           if(err) { throw err; }
           Person.findOne({ _id: id }, function(err, person) {
-            if(err) { throw err; }
-            (!person).should.be.true;
+            err.should.be.OK;
             done();
           });
         });
