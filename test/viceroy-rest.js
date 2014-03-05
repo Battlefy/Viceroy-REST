@@ -9,18 +9,14 @@ var validConfig = {
 
 describe('middleware', function() {
 
-  it('passes the callback an error if it failed to initialize', function(done) {
-    var middleware = viceroyRest(invalidConfig);
-    middleware.connect(function(err) {
-      (!!err).should.be.OK;
-      err.should.be.an.instanceOf(Error);
-      done()
-    });
+  it('throws if an invalid config is passed', function() {
+    (function() {
+      viceroyRest(invalidConfig);
+    }).should.throw();
   });
 
   it('can connect', function(done) {
-    var middleware = viceroyRest(validConfig);
-    middleware.connect(done);
+    viceroyRest(validConfig).connect(done);
   });
 
   it('can take option beforeSend', function(done) {
@@ -33,17 +29,14 @@ describe('middleware', function() {
     middleware.connect(done);
   });
 
-  it('can error with option beforeSend as not an object', function(done) {
-    var config = {
-      host: 'localhost',
-      port: '8000',
-      beforeSend: {}
-    }
-    var middleware = viceroyRest(config);
-    middleware.connect(function(err){
-      err.message.should.include('beforeSend');
-      done()
-    });
+  it('throws if before send is not a function', function() {
+    (function() {
+      viceroyRest({
+        host: 'localhost',
+        port: '8000',
+        beforeSend: {}
+      });
+    }).should.throw();
   });
 
   it('can take option withCredentials', function(done) {
@@ -69,7 +62,7 @@ describe('middleware', function() {
         .get('/people')
         .reply(200, [{name: 'Shane', age: 25}], {'Content-Type': 'application/json'});
 
-      var collection = 'people'
+      var collection = 'people';
       var query = { name: 'Shane'};
       this.middleware.find.should.be.a('function');
       this.middleware.find(query, {collection: collection}, function (err, results) {
@@ -77,19 +70,19 @@ describe('middleware', function() {
         results.length.should.equal(1);
         results[0].should.eql({ name: 'Shane', age: 25 });
         done();
-      })
+      });
     });
 
     it('implements an insert method that calls out to http', function(done) {
       nock('http://localhost:8000')
         .post('/people')
-        .reply(200, {name: 'Shane', age: 26}, {'Content-Type': 'application/json'});
+        .reply(200, [{name: 'Shane', age: 26}], {'Content-Type': 'application/json'});
 
       var _this = this;
       var collection = 'people'
-      var data = { name: 'Shane', age: 26 };
+      var data = [{ name: 'Shane', age: 26 }];
       this.middleware.insert.should.be.a('function');
-      this.middleware.insert(data, {collection: collection}, function(err, result){
+      this.middleware.insert(data, { collection: collection }, function(err, result) {
         if (err) { throw err };
         result.should.eql(data);
         done();
@@ -99,17 +92,17 @@ describe('middleware', function() {
     it('implements an insert method that calls out to beforeSend before http', function(done) {
       nock('http://localhost:8000')
         .post('/people')
-        .reply(200, {name: 'Shane', age: 26}, {'Content-Type': 'application/json'});
+        .reply(200, [{name: 'Shane', age: 26}], {'Content-Type': 'application/json'});
 
       var _this = this;
       var collection = 'people'
-      var data = { name: 'Shane', age: 26 };
       var called = false;
       this.middleware.opts.beforeSend = function(){
         called = true;
-      }
+      };
+      
       this.middleware.insert.should.be.a('function');
-      this.middleware.insert(data, {collection: collection}, function(){
+      this.middleware.insert([{ name: 'Shane', age: 26 }], {collection: collection}, function(){
         called.should.equal(true);
         done()
       });
